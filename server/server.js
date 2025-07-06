@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
-
 dotenv.config();
 const app = express();
 
@@ -12,6 +11,8 @@ app.use(express.json());
 
 const jobRoutes = require("./routes/job");
 app.use("/api/jobs", jobRoutes);
+
+app.use("/api/jobs", require("./routes/job"));
 
 // ✅ Import and use auth routes here
 const authRoutes = require("./routes/auth");

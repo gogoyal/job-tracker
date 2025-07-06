@@ -159,9 +159,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { Trash2, Edit2 } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [editJob, setEditJob] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [form, setForm] = useState({
     title: "",
@@ -200,6 +202,34 @@ const Dashboard = () => {
       fetchJobs();
     } catch (err) {
       alert("Failed to add job");
+    }
+  };
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/jobs/${id}`);
+      setJobs(jobs.filter((job) => job._id !== id));
+    } catch (err) {
+      alert("Failed to delete job");
+    }
+  };
+
+  const startEditing = (job) => {
+    setEditJob(job);
+  };
+
+  const handleEditSubmit = async (e, id) => {
+    e.preventDefault();
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/jobs/${id}`,
+        editJob
+      );
+      // Update job in state
+      const updatedJobs = jobs.map((job) => (job._id === id ? res.data : job));
+      setJobs(updatedJobs);
+      setEditJob(null);
+    } catch (err) {
+      alert("Failed to update job");
     }
   };
 
@@ -260,7 +290,7 @@ const Dashboard = () => {
 
         {/* Display list of jobs */}
         <h2 className="text-2xl font-semibold mb-6 text-center">
-        Your Job Applications
+          Your Job Applications
         </h2>
 
         {jobs.length === 0 ? (
@@ -274,31 +304,98 @@ const Dashboard = () => {
                 key={job._id}
                 className="bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-lg p-5 shadow hover:shadow-lg transition transform hover:scale-[1.02]"
               >
-                <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                  {job.title}
-                </h3>
-                <p className="mb-1">
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    🏢 Company:
-                  </span>{" "}
-                  {job.company}
-                </p>
-                <p>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    📍 Status:
-                  </span>{" "}
-                  <span
-                    className={`inline-block px-2 py-1 text-sm font-bold rounded-full ${
-                      job.status === "Interview"
-                        ? "bg-green-200 text-green-800 dark:bg-green-600 dark:text-white"
-                        : job.status === "Rejected"
-                        ? "bg-red-200 text-red-800 dark:bg-red-600 dark:text-white"
-                        : "bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-white"
-                    }`}
-                  >
-                    {job.status}
-                  </span>
-                </p>
+                {editJob && editJob._id === job._id ? (
+                  // ✅ EDIT FORM
+                  <form onSubmit={(e) => handleEditSubmit(e, job._id)}>
+                    <input
+                      type="text"
+                      value={editJob.title}
+                      onChange={(e) =>
+                        setEditJob({ ...editJob, title: e.target.value })
+                      }
+                      placeholder="Job Title"
+                      className="w-full p-2 mb-2 rounded bg-gray-100 dark:bg-gray-800"
+                    />
+                    <input
+                      type="text"
+                      value={editJob.company}
+                      onChange={(e) =>
+                        setEditJob({ ...editJob, company: e.target.value })
+                      }
+                      placeholder="Company"
+                      className="w-full p-2 mb-2 rounded bg-gray-100 dark:bg-gray-800"
+                    />
+                    <select
+                      value={editJob.status}
+                      onChange={(e) =>
+                        setEditJob({ ...editJob, status: e.target.value })
+                      }
+                      className="w-full p-2 mb-3 rounded bg-gray-100 dark:bg-gray-800"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Interview">Interview</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        className="bg-blue-600 text-white px-4 py-1 rounded"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditJob(null)}
+                        className="text-gray-500 hover:underline"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                      {job.title}
+                    </h3>
+                    <p className="mb-1">
+                      <span className="font-semibold text-gray-600 dark:text-gray-300">
+                        🏢 Company:
+                      </span>{" "}
+                      {job.company}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-gray-600 dark:text-gray-300">
+                        📍 Status:
+                      </span>{" "}
+                      <span
+                        className={`inline-block px-2 py-1 text-sm font-bold rounded-full ${
+                          job.status === "Interview"
+                            ? "bg-green-200 text-green-800 dark:bg-green-600 dark:text-white"
+                            : job.status === "Rejected"
+                            ? "bg-red-200 text-red-800 dark:bg-red-600 dark:text-white"
+                            : "bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-white"
+                        }`}
+                      >
+                        {job.status}
+                      </span>
+                    </p>
+                    <button
+                      onClick={() => handleDelete(job._id)}
+                      className="mt-3 text-red-500 hover:text-red-700 transition"
+                      title="Delete Job"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+
+                    <button
+                      onClick={() => startEditing(job)}
+                      className="text-green-500 hover:text-green-700 mr-2 ml-2"
+                      title="Edit Job"
+                    >
+                      <Edit2 size={20} />
+                    </button>
+                  </>
+                )}
               </div>
             ))}
           </div>
