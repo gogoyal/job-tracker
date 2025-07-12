@@ -160,6 +160,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Trash2, Edit2 } from "lucide-react";
+import Sidebar from "../components/Sidebar";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -172,13 +173,21 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You must login first!");
-      navigate("/login");
-    } else {
-      fetchJobs();
-    }
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/api/jobs", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setJobs(res.data);
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+      }
+    };
+
+    fetchJobs();
   }, []);
 
   const fetchJobs = async () => {
@@ -237,7 +246,40 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-all">
       <Navbar />
 
-      <div className="max-w-5xl mx-auto px-4 py-10">
+     <div className="flex p-4 gap-4">
+  <div className="w-[220px]">
+    <Sidebar jobs={jobs} />
+  </div>
+  <div className="flex-1">
+         {/* <div className="flex-1">
+          <h1 className="text-2xl font-bold mb-4">🧑‍💼 Your Jobs</h1>
+          
+          {jobs.map((job) => (
+            <div
+              key={job._id}
+              className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-3"
+            >
+              <h2 className="text-lg font-semibold">{job.position}</h2>
+              <p className="text-sm text-gray-500">{job.company}</p>
+              <p className="text-sm">
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`${
+                    job.status === "Pending"
+                      ? "text-yellow-500"
+                      : job.status === "Interview"
+                      ? "text-blue-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {job.status}
+                </span>
+              </p>
+            </div>
+          ))}
+        </div>  */}
+
+             <div className="max-w-6xl mx-auto px-2 py-10">
         <h1 className="text-4xl font-bold mb-6 text-blue-600 dark:text-blue-400 text-center">
           Job Tracker Dashboard
         </h1>
@@ -401,6 +443,10 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+      </div>
+      </div>
+
+ 
     </div>
   );
 };
