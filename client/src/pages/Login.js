@@ -30,8 +30,7 @@ const Login = () => {
     <>
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4 text-black dark:text-white">
-        <div className="absolute top-4 right-4">
-        </div>
+        <div className="absolute top-4 right-4"></div>
 
         <div className="w-full max-w-md p-6">
           <h1 className="text-3xl font-bold mb-6 text-center text-blue-600 dark:text-blue-400">
