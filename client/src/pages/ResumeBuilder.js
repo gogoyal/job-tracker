@@ -26,6 +26,7 @@ const ResumeBuilder = () => {
   const [showTitleInput, setShowTitleInput] = useState(false);
   const [profileImage, setProfileImage] = useState("");
   const [imageSize, setImageSize] = useState(100);
+  const [fontSize, setFontSize] = useState("14px");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -214,6 +215,20 @@ const ResumeBuilder = () => {
               >
                 + Add Custom Section
               </button>
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium">Text Size:</label>
+                <select
+                  value={fontSize}
+                  onChange={(e) => setFontSize(e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  <option value="12px">Small</option>
+                  <option value="14px">Medium</option>
+                  <option value="16px">Large</option>
+                  <option value="18px">X-Large</option>
+                </select>
+              </div>
+
               <button
                 onClick={handleDownload}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"

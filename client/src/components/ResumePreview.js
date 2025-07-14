@@ -1,9 +1,19 @@
 import React from "react";
 
-const ResumePreview = ({ sections, profileImage }) => {
+const ResumePreview = ({
+  sections,
+  profileImage,
+  fontSize = "14px",
+  theme = "blue",
+}) => {
+  // Get dynamic title color based on theme
+  const getTitleColor = () => {
+    return theme === "dark" ? "text-gray-700" : "text-blue-600";
+  };
+
   return (
     <div className="space-y-4">
-      {/* Profile Image (only if uploaded) */}
+      {/* Profile Image */}
       {profileImage && (
         <div className="flex justify-center mb-4">
           <img
@@ -14,12 +24,18 @@ const ResumePreview = ({ sections, profileImage }) => {
         </div>
       )}
 
-      {/* Render each non-empty section */}
+      {/* Resume Sections */}
       {sections.map((section) =>
         section.value.trim() ? (
           <div key={section.id} className="mb-4">
-            <h2 className="text-lg font-bold text-blue-600">{section.title}</h2>
-            <p className="text-sm whitespace-pre-line">{section.value}</p>
+            <h2 className={`text-lg font-bold ${getTitleColor()}`}>
+              {section.title}
+            </h2>
+            <div
+              className="text-sm whitespace-pre-line"
+              style={{ fontSize }}
+              dangerouslySetInnerHTML={{ __html: section.value }}
+            />
           </div>
         ) : null
       )}
