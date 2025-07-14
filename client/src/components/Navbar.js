@@ -16,7 +16,7 @@ const Navbar = () => {
         className="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer"
         onClick={() => navigate("/dashboard")}
       >
-         📋 Job Tracker
+        📋 HireScope
       </h1>
 
       <div className="flex items-center space-x-4">
